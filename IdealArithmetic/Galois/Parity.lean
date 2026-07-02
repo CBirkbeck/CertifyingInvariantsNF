@@ -100,7 +100,7 @@ theorem galAction_apply_prod_roots_sub (p : F[X]) (σ : p.Gal)
     intro x
     constructor
     · intro hx
-      simpa using Polynomial.rootSet_mapsTo σ.toAlgHom hx
+      exact Polynomial.rootSet_mapsTo σ.toAlgHom hx
     · intro hx
       have h2 := Polynomial.rootSet_mapsTo σ.symm.toAlgHom hx
       have hx' : (σ.symm.toAlgHom (σ x) : p.SplittingField) = x := σ.symm_apply_apply x

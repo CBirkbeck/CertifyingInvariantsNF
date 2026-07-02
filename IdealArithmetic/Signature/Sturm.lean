@@ -754,23 +754,23 @@ lemma signChanges_length_two  [DecidableEq R] [Ring R] [LinearOrder R] [IsStrict
 
 lemma signChanges_cons_eq_add' [Zero R] [Preorder R] [DecidableLT R] (a b : R) (as : List R) :
   signChanges' (a :: b :: as) = signChanges' [a, b] + signChanges' (b :: as) := by
-by_cases hc : sign a * sign b = -1
-· simp [signChanges', hc]
-· simp [signChanges', hc]
+  by_cases hc : sign a * sign b = -1
+  · simp [signChanges', hc]
+  · simp [signChanges', hc]
 
 lemma signChanges_cons_eq_add [Zero R] [Preorder R] [DecidableLT R] [DecidableEq R]
   (a b : R) (as : List R) (hb : b ≠ 0) :
   signChanges (a :: b :: as) = signChanges [a, b] + signChanges (b :: as) := by
-have aux : ∀ x y : R, ∀ L : List R,  x :: y :: L = [x, y] ++ L := by simp
-by_cases ha : a ≠ 0
-· have aux2 : (List.filter (fun x ↦ if x ≠ 0 then true else false) [a, b]) = [a, b] := by
-    simp[ha, hb]
-  unfold signChanges
-  rw [aux, List.filter_append, aux2, ← aux, signChanges_cons_eq_add']
-  congr ; simp [hb]
-· push Not at ha
-  rw [ha]
-  simp[signChanges_zero_head, signChanges_single]
+  have aux : ∀ x y : R, ∀ L : List R,  x :: y :: L = [x, y] ++ L := by simp
+  by_cases ha : a ≠ 0
+  · have aux2 : (List.filter (fun x ↦ if x ≠ 0 then true else false) [a, b]) = [a, b] := by
+      simp[ha, hb]
+    unfold signChanges
+    rw [aux, List.filter_append, aux2, ← aux, signChanges_cons_eq_add']
+    congr ; simp [hb]
+  · push Not at ha
+    rw [ha]
+    simp[signChanges_zero_head, signChanges_single]
 
 
 lemma signChanges_modify_zero [Zero R] [Preorder R] [DecidableLT R] [DecidableEq R]
@@ -807,31 +807,31 @@ lemma signChanges_map' [Zero R] [Preorder R] [DecidableLT R] [DecidableEq R]
   [Zero S] [Preorder S] [DecidableLT S] [DecidableEq S] (f : R → S)
   (hmono1 : ∀ a , 0 < a ↔ 0 < f a ) (hmono2 : ∀ a , a < 0 ↔ f a < 0 ) (L : List R) :
   signChanges' L = signChanges' (L.map f) := by
-have aux : ∀ x, sign (f x) = sign x := by
-  intro x
-  simp_rw [sign_apply, hmono1, hmono2]
-induction L with
-| nil => rfl
-| cons a as hi =>
-  match as with
-  | [] => simp [signChanges']
-  | (b :: bs) =>
-  simp
-  by_cases ha : sign a * sign b = -1
-  · have hac := ha
-    have ha : sign (f a) * sign (f b) = -1 := by
-       rw [aux a, aux b]
-       exact ha
-    unfold signChanges'
-    simp [ha, hac]
-    simp[hi]
-  · have hac := ha
-    have ha : ¬ sign (f a) * sign (f b) = -1 := by
-      rw [aux a, aux b]
-      exact ha
-    unfold signChanges'
-    simp [ha, hac]
-    simp[hi]
+  have aux : ∀ x, sign (f x) = sign x := by
+    intro x
+    simp_rw [sign_apply, hmono1, hmono2]
+  induction L with
+  | nil => rfl
+  | cons a as hi =>
+    match as with
+    | [] => simp [signChanges']
+    | (b :: bs) =>
+    simp
+    by_cases ha : sign a * sign b = -1
+    · have hac := ha
+      have ha : sign (f a) * sign (f b) = -1 := by
+         rw [aux a, aux b]
+         exact ha
+      unfold signChanges'
+      simp [ha, hac]
+      simp[hi]
+    · have hac := ha
+      have ha : ¬ sign (f a) * sign (f b) = -1 := by
+        rw [aux a, aux b]
+        exact ha
+      unfold signChanges'
+      simp [ha, hac]
+      simp[hi]
 
 lemma signChanges_map [Zero R] [LinearOrder R] [DecidableLT R] [DecidableEq R]
   [Zero S] [LinearOrder S] [DecidableLT S] [DecidableEq S] (f : R → S)
@@ -1281,11 +1281,11 @@ lemma sturm_sequence_unique_root_ne_p (hc : IsRealClosedField F) {a b : F} (hab 
       rw [← hr s (Set.mem_Icc_of_Ioo hsmem ) 0 (by omega) (by simp_rw [hs.h0] ; exact hs') ] at hpnr
       exact hpnr hs'
       · simp only [ne_eq, sign_eq_zero_iff]
-        convert hevala 0 (by omega)
-        exact (hs.h0).symm
+        rw [← hs.h0]
+        exact hevala 0 (by omega)
       · simp only [ne_eq, sign_eq_zero_iff]
-        convert hevalb 0 (by omega)
-        exact (hs.h0).symm
+        rw [← hs.h0]
+        exact hevalb 0 (by omega)
     constructor
     · exact higt
     · obtain ⟨r, hrmem, hrr⟩ := polynomial_has_root_of_ne_sign hc (le_of_lt hab)
@@ -2168,10 +2168,17 @@ def SturmBuilderExample1 : SturmBuilderOfList [[-8, 9, 0, -3, 0, 1], [9, 0, -9, 
 /-- The polynomial `X ^ 5 - 3 * X ^ 3 + 9 * X - 8` has exactly `1` real root -/
 theorem real_roots1 :
     #(Multiset.toFinset (X ^ 5 - 3 * X ^ 3 + 9 * X - 8 : ℝ[X]).roots) = 1 := by
-  have : (List.derivative [-8, 9, 0, -3, 0, 1]).dropTrailingZeros = [9, 0, -9, 0, 5]:= by decide
-  convert sturm_theorem_total_map_ofList ℝ (Real.IsRealClosedField) (algebraMap ℤ ℝ) (Int.cast_strictMono)
-    (this ▸ SturmBuilderExample1)
-  · simp ; ring
+  have hd : (List.derivative [-8, 9, 0, -3, 0, 1]).dropTrailingZeros = [9, 0, -9, 0, 5] := by decide
+  have hpoly : (X ^ 5 - 3 * X ^ 3 + 9 * X - 8 : ℝ[X]) =
+      map (algebraMap ℤ ℝ) (ofList [-8, 9, 0, -3, 0, 1]) := by
+    rw [ofList_map]
+    simp only [List.map_cons, List.map_nil, ofList_cons, ofList_nil, eq_intCast,
+      Polynomial.C_eq_intCast]
+    push_cast
+    ring
+  rw [hpoly]
+  exact (sturm_theorem_total_map_ofList ℝ Real.IsRealClosedField (algebraMap ℤ ℝ)
+    Int.cast_strictMono (hd ▸ SturmBuilderExample1)).trans (by decide)
 
 
 /-- EXAMPLE 2:  `X^8 - X^7 - 3*X^6 + 3*X^5 + 3*X^4 - 6*X^3 - 2*X^2 + 3*X + 1` -/
@@ -2212,8 +2219,15 @@ def SturmBuilderExample2 : SturmBuilderOfList P2 [1, 3, -2, -6, 3, 3, -3, -1, 1]
 /-- The polynomial `X^8 - X^7 - 3*X^6 + 3*X^5 + 3*X^4 - 6*X^3 - 2*X^2 + 3*X + 1` has exactly `4` real root -/
 theorem real_roots2 :
     #(Multiset.toFinset (X^8 - X^7 - 3*X^6 + 3*X^5 + 3*X^4 - 6*X^3 - 2*X^2 + 3*X + 1 : ℝ[X]).roots) = 4 := by
-  have : (List.derivative [1, 3, -2, -6, 3, 3, -3, -1, 1]).dropTrailingZeros =
-    [3, -4, -18, 12, 15, -18, -7, 8]:= by decide
-  convert sturm_theorem_total_map_ofList ℝ (Real.IsRealClosedField) (algebraMap ℤ ℝ) (Int.cast_strictMono)
-     (this ▸ SturmBuilderExample2)
-  · simp ; ring
+  have hd : (List.derivative [1, 3, -2, -6, 3, 3, -3, -1, 1]).dropTrailingZeros =
+    [3, -4, -18, 12, 15, -18, -7, 8] := by decide
+  have hpoly : (X^8 - X^7 - 3*X^6 + 3*X^5 + 3*X^4 - 6*X^3 - 2*X^2 + 3*X + 1 : ℝ[X]) =
+      map (algebraMap ℤ ℝ) (ofList [1, 3, -2, -6, 3, 3, -3, -1, 1]) := by
+    rw [ofList_map]
+    simp only [List.map_cons, List.map_nil, ofList_cons, ofList_nil, eq_intCast,
+      Polynomial.C_eq_intCast]
+    push_cast
+    ring
+  rw [hpoly]
+  exact (sturm_theorem_total_map_ofList ℝ Real.IsRealClosedField (algebraMap ℤ ℝ)
+    Int.cast_strictMono (hd ▸ SturmBuilderExample2)).trans (by decide)

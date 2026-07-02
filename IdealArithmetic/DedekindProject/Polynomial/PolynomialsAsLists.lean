@@ -153,17 +153,17 @@ lemma List.dropTrailingZeros_of_zero [Zero R] [DecidableEq R]
 
 lemma ofList_eq_zero_iff [Semiring R] [DecidableEq R] (l : List R) :
   ofList l = 0 ↔ ∀ x ∈ l, x = 0 := by
-constructor
-· intro hl x hxmem
-  obtain ⟨i, hi, hia⟩ := List.mem_iff_getElem.mp hxmem
-  have hl' : (ofList l).toFinsupp i = 0 := by
-    rw [hl, toFinsupp_zero]
-    exact Finsupp.zero_apply
-  simp only [ofList, Finsupp.ofList, ne_eq, Finsupp.coe_mk] at hl'
-  rw [List.getD_eq_getElem _ _ hi] at hl'
-  rw [← hia, hl']
-· intro h
-  exact ofList_zeros l h
+  constructor
+  · intro hl x hxmem
+    obtain ⟨i, hi, hia⟩ := List.mem_iff_getElem.mp hxmem
+    have hl' : (ofList l).toFinsupp i = 0 := by
+      rw [hl, toFinsupp_zero]
+      exact Finsupp.zero_apply
+    simp only [ofList, Finsupp.ofList, ne_eq, Finsupp.coe_mk] at hl'
+    rw [List.getD_eq_getElem _ _ hi] at hl'
+    rw [← hia, hl']
+  · intro h
+    exact ofList_zeros l h
 
 lemma List.dropTrailingZeros_ne_zero_of_ne_zero [Zero R] [DecidableEq R]
     (l : List R) (h : ∃ x ∈ l, x ≠ 0) : ∃ x ∈ l.dropTrailingZeros, x ≠ 0 := by
@@ -687,9 +687,9 @@ lemma List.self_eq_dropTrailingZeros_append_zero {R : Type*} [DecidableEq R] [Ze
         decide_eq_false_iff_not, h, ↓reduceIte, nil_append]
       use (a :: as).length
       push Not at h
-      simp only [h, replicate, cons.injEq, true_and]
       rw [List.eq_replicate_length]
-      exact h.2
+      simp only [List.mem_cons, forall_eq_or_imp]
+      exact ⟨h.1, h.2⟩
 
 lemma ofList_eq_zero {R : Type u} [Semiring R] [DecidableEq R]
     (l : List R) (h : ofList l = 0) : ∃ (n : ℕ) , l = List.replicate n 0 := by

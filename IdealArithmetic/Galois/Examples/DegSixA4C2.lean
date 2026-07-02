@@ -204,7 +204,8 @@ def SturmRC : SturmBuilderOfList [[125, 0, -50, 0, -5, 0, 1], [0, -100, 0, -20, 
 recursive-resultant discriminant engine. -/
 theorem f_discr : f.discr = -4689453125000000 := by
   convert discriminant_eq_DiscriminantOfPRemainder_of_SturmBuilderOfList SturmRC
-  rw [f_ofList]
+  · rw [f_ofList]
+  · decide
 
 /-- `13 ∤ disc f` — the certificate's separability input. -/
 theorem f_disc_mod13 : (Int.castRingHom (ZMod 13)) f.discr ≠ 0 := by rw [f_discr]; decide

@@ -43,7 +43,7 @@ coordinate set induces on `C₂^S`. -/
 noncomputable def precompAut {S : Type*} :
     Equiv.Perm S →* MulAut (Multiplicative (S → ZMod 2)) where
   toFun ρ := AddEquiv.toMultiplicative (precompAddAut ρ)
-  map_one' := by ext v s; simp [precompAddAut, AddEquiv.toMultiplicative]
+  map_one' := by ext v s; simp [precompAddAut, AddEquiv.toMultiplicative, pull_end]
   map_mul' ρ σ := by ext v s; simp [precompAddAut, AddEquiv.toMultiplicative]; rfl
 
 /-- `precompAut ρ` sends `Multiplicative.ofAdd v` to `Multiplicative.ofAdd (v ∘ ρ.symm)`. -/
