@@ -9,7 +9,7 @@ package «IdealArithmetic» where
   -- add any additional package configuration options here
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.31.0"
+  "https://github.com/leanprover-community/mathlib4.git" @ "dc4b8d60d5edb3c493c3662126b1b7ccae7d67cf"
 
 @[default_target]
 lean_lib «IdealArithmetic» where

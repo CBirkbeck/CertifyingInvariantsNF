@@ -30,7 +30,7 @@ def Finsupp.ofList {R : Type*} [DecidableEq R] [Zero R] (xs : List R) : ℕ →�
 
 /-- Sends the list `[a₀, …, aₙ]` to the polynomial `a₀ + … + aₙ * X ^ n`.  -/
 def Polynomial.ofList {R : Type*} [Semiring R] [DecidableEq R] (xs : List R) : R[X] :=
-  ⟨Finsupp.ofList xs⟩
+  ⟨.ofCoeff (Finsupp.ofList xs)⟩
 
 @[simp] lemma Polynomial.coeff_ofList {R : Type*} [Semiring R] [DecidableEq R] (xs : List R)
     (n : ℕ) : (ofList xs).coeff n = xs.getD n 0 := by
@@ -156,11 +156,9 @@ lemma ofList_eq_zero_iff [Semiring R] [DecidableEq R] (l : List R) :
   constructor
   · intro hl x hxmem
     obtain ⟨i, hi, hia⟩ := List.mem_iff_getElem.mp hxmem
-    have hl' : (ofList l).toFinsupp i = 0 := by
-      rw [hl, toFinsupp_zero]
-      exact Finsupp.zero_apply
-    simp only [ofList, Finsupp.ofList, ne_eq, Finsupp.coe_mk] at hl'
-    rw [List.getD_eq_getElem _ _ hi] at hl'
+    have hl' : (ofList l).coeff i = 0 := by
+      rw [hl, coeff_zero]
+    rw [coeff_ofList, List.getD_eq_getElem _ _ hi] at hl'
     rw [← hia, hl']
   · intro h
     exact ofList_zeros l h
@@ -213,8 +211,8 @@ lemma dropTrailingZeros_iter [Zero R] (l : List R) [DecidableEq R] :
         decide_eq_false_iff_not, h, ↓reduceIte, List.dropTrailingZeros]
 
 @[simp]
-lemma dropTrailingZeros_zero [Zero R] [DecidableEq R] : ([0] : List R).dropTrailingZeros = [] := by
-  simp only [List.all_nil, List.dropTrailingZeros_eq_empty]
+lemma dropTrailingZeros_zero [Zero R] [DecidableEq R] : ([0] : List R).dropTrailingZeros = [] :=
+  List.dropTrailingZeros_eq_empty [] rfl
 
 lemma dropTrailingZeros_cons [Zero R] [DecidableEq R] (a : R) (as : List R) :
     (a :: as).dropTrailingZeros =  (a :: as.dropTrailingZeros).dropTrailingZeros:= by
@@ -577,8 +575,7 @@ lemma toList_comp_ofList (l : List R) :
 
 lemma toList_zero : toList (0 : R[X]) = [] := by
   simp only [toList, natDegree_zero, zero_add, List.ofFn_succ, Nat.reduceAdd, Fin.isValue,
-    Fin.cast_eq_self, Fin.val_eq_zero, coeff_zero, List.ofFn_zero, List.all_nil,
-    List.dropTrailingZeros_eq_empty]
+    Fin.cast_eq_self, Fin.val_eq_zero, coeff_zero, List.ofFn_zero, dropTrailingZeros_zero]
 
 lemma nil_of_ofList_eq_zero (l : List R)
     (hdt : l = l.dropTrailingZeros) (hz : ofList l = 0) : l = [] := by

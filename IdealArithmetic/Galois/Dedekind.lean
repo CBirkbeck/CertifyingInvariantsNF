@@ -664,7 +664,8 @@ private theorem exists_reductionRoots_prod [𝔔.IsMaximal]
   set M : Multiset (𝓞 E) :=
     (f.map (algebraMap ℤ E)).roots.pmap (fun a ha => (⟨a, ha⟩ : 𝓞 E)) hrootint with hMdef
   have hMmap : M.map (algebraMap (𝓞 E) E) = (f.map (algebraMap ℤ E)).roots := by
-    rw [hMdef, Multiset.map_pmap]
+    rw [hMdef]
+    erw [Multiset.map_pmap]
     change Multiset.pmap (fun a (_ : IsIntegral ℤ a) => a)
       (f.map (algebraMap ℤ E)).roots hrootint = _
     rw [Multiset.pmap_eq_map, Multiset.map_id']
@@ -688,7 +689,8 @@ private theorem exists_reductionRoots_prod [𝔔.IsMaximal]
     have hnd := Polynomial.nodup_roots hsep
     rwa [Polynomial.roots_multiset_prod_X_sub_C] at hnd
   refine ⟨M, fun x => ?_, hFk, hSnodup⟩
-  rw [hMdef, Multiset.mem_pmap]
+  rw [hMdef]
+  erw [Multiset.mem_pmap]
   constructor
   · rintro ⟨a, ha, rfl⟩
     have haroot : eval a (f.map (algebraMap ℤ E)) = 0 :=
@@ -813,7 +815,7 @@ theorem exists_reduction_rootSet_equiv_permCongr [𝔔.IsMaximal]
     have hlm : lift ⟨(m : E), ha_rootSet⟩ = m := RingOfIntegers.coe_injective rfl
     rw [hlm]; exact hmk
   have hbij : Function.Bijective ρ := ⟨hρinj, hρsurj⟩
-  refine ⟨(Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm.trans
+  refine ⟨(Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm.trans
       (Equiv.ofBijective ρ hbij), ?_, ?_⟩
   · rw [Polynomial.splits_iff_exists_multiset]
     refine ⟨M.map (Ideal.Quotient.mk 𝔔), ?_⟩
@@ -821,28 +823,28 @@ theorem exists_reduction_rootSet_equiv_permCongr [𝔔.IsMaximal]
     exact hFk
   · have hfun : ∀ r : (f.map (Int.castRingHom ℚ)).rootSet E,
         frobeniusPerm p (𝓞 E ⧸ 𝔔) g
-            (((Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm.trans
+            (((Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm.trans
               (Equiv.ofBijective ρ hbij)) r)
-          = ((Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm.trans
+          = ((Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm.trans
               (Equiv.ofBijective ρ hbij))
               (Polynomial.Gal.galActionHom (f.map (Int.castRingHom ℚ)) E σ r) := by
       intro r
       show frobeniusPerm p (𝓞 E ⧸ 𝔔) g
-          (ρ ((Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm r))
-        = ρ ((Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm
+          (ρ ((Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm r))
+        = ρ ((Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm
             (Polynomial.Gal.galActionHom (f.map (Int.castRingHom ℚ)) E σ r))
-      rw [hequiv ((Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm r)]
+      rw [hequiv ((Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm r)]
       congr 1
-      -- `galActionHom σ` unfolds definitionally to `rootsEquivRoots ∘ Hσ ∘ rootsEquivRoots.symm`.
+      -- `galActionHom σ` unfolds definitionally to `rootsEquivRootsAux ∘ Hσ ∘ rootsEquivRootsAux.symm`.
       rw [show Polynomial.Gal.galActionHom (f.map (Int.castRingHom ℚ)) E σ r
-            = Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E
-                (Hσ ((Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm r))
+            = Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E
+                (Hσ ((Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm r))
           from rfl,
         Equiv.symm_apply_apply]
     apply Equiv.ext
     intro s
     rw [Equiv.permCongr_apply]
-    have h := hfun (((Polynomial.Gal.rootsEquivRoots (f.map (Int.castRingHom ℚ)) E).symm.trans
+    have h := hfun (((Polynomial.Gal.rootsEquivRootsAux (f.map (Int.castRingHom ℚ)) E).symm.trans
       (Equiv.ofBijective ρ hbij)).symm s)
     rwa [Equiv.apply_symm_apply] at h
 
