@@ -109,7 +109,7 @@ theorem galAction_apply_prod_roots_sub (p : F[X]) (σ : p.Gal)
     Equiv.Perm.subtypePerm σ.toEquiv (fun x => (hmaps x).symm) with hρ
   have hact : ∀ x : {x // x ∈ p.rootSet p.SplittingField}, σ (x : p.SplittingField) = ↑(ρ x) :=
     fun _ => rfl
-  have hπρ : galActionHom p p.SplittingField σ = (rootsEquivRoots p p.SplittingField).permCongr ρ := by
+  have hπρ : galActionHom p p.SplittingField σ = (rootsEquivRootsAux p p.SplittingField).permCongr ρ := by
     refine Equiv.ext fun w => ?_
     simp only [Equiv.permCongr_apply, Polynomial.Gal.galActionHom, MulAction.toPermHom_apply,
       MulAction.toPerm_apply, Polynomial.Gal.smul_def]

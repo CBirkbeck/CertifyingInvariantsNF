@@ -249,8 +249,7 @@ lemma rolle_theorem_weak (hc : IsRealClosedField F) {a b : F} (hab : a < b) {P :
     rw [mul_add, mul_add, add_mul _ _ Q]
     nth_rw 2 [add_comm]
     have : ∀ n : ℕ , (n : F[X]) + 1 = ↑(n + 1) := fun n => by simp only [Nat.cast_add, Nat.cast_one]
-    congr 1
-    congr 1
+    refine congrArg₂ (· + ·) (congrArg₂ (· + ·) ?_ ?_) ?_
     · simp [Nat.succ_eq_add_one] ; simp_rw [this, Nat.sub_one_add_one hbm] ; ring
     · simp [Nat.succ_eq_add_one] ; simp_rw [this, Nat.sub_one_add_one ham] ; ring
     · simp [Nat.succ_eq_add_one] ; ring
@@ -621,7 +620,7 @@ lemma q_ne_zero {P : List R[X]} {p q : R[X]}
     IsSturmSequence (List.map (Polynomial.map f) P) (map f p) (map f q) where
   hlen := by simp[h.hlen]
   h0 := by simp [h.h0]
-  h1 := by simp only [List.getElem_map]  ; simp_rw [← h.h1] ; rfl
+  h1 := by simp only [List.getElem_map]  ; simp_rw [← h.h1]
   hc := by
     obtain ⟨c, hc1, hc2⟩ := h.hc
     use f c

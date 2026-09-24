@@ -537,7 +537,7 @@ proof; the direct `rfl` is expensive because of the `SplittingField` instances).
 /-! ### Weight-from-cycle-type (L4.5): a `{2,1⁴}` kernel involution flips exactly one block
 
 The `p = 13` Frobenius certificate delivers a `σ₀` whose *twisted* `galActionHom` permutation of the
-roots has partition `{2,1,1,1,1}`. `galActionHom` is conjugate (via the `rootsEquivRoots` twist) to the
+roots has partition `{2,1,1,1,1}`. `galActionHom` is conjugate (via the `rootsEquivRootsAux` twist) to the
 **honest** action `fRootEquiv σ` (`x ↦ σ x`), so both have the same partition. On the honest side the
 block combinatorics are transparent: `σ₀ ∈ K` flips whole `±`-pairs, so a single transposition means a
 single flipped block, i.e. `blockSign σ₀` is a standard basis vector. -/
@@ -563,20 +563,20 @@ noncomputable def fRootEquiv (σ : (h.comp (X ^ 2)).Gal) :
     (x : (h.comp (X ^ 2)).rootSet (h.comp (X ^ 2)).SplittingField) :
     fRootEquiv h σ x = fRoot h σ x := rfl
 
-/-- **The twist, dissolved.** `galActionHom σ` (twisted by the `rootsEquivRoots` lift `Splitting↪E`)
-equals the honest `fRootEquiv σ` conjugated by `rootsEquivRoots` — the same `smul_def` cancellation used
+/-- **The twist, dissolved.** `galActionHom σ` (twisted by the `rootsEquivRootsAux` lift `Splitting↪E`)
+equals the honest `fRootEquiv σ` conjugated by `rootsEquivRootsAux` — the same `smul_def` cancellation used
 for Dedekind's theorem (`exists_reduction_rootSet_equiv_permCongr`). No `galActionHom_val`/`L = id`
 lemma is needed (both are unprovable). -/
 theorem galActionHom_eq_permCongr_fRootEquiv (σ : (h.comp (X ^ 2)).Gal) :
     Gal.galActionHom (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField σ
-      = (Gal.rootsEquivRoots (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).permCongr
+      = (Gal.rootsEquivRootsAux (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).permCongr
           (fRootEquiv h σ) := by
   ext r
   rw [Equiv.permCongr_apply,
     show Gal.galActionHom (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField σ r
-        = Gal.rootsEquivRoots (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField
+        = Gal.rootsEquivRootsAux (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField
             (fRootEquiv h σ
-              ((Gal.rootsEquivRoots (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).symm r))
+              ((Gal.rootsEquivRootsAux (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).symm r))
       from rfl]
 
 open scoped Classical in
@@ -588,7 +588,7 @@ theorem galActionHom_partition_parts_eq (σ : (h.comp (X ^ 2)).Gal) :
   rw [galActionHom_eq_permCongr_fRootEquiv, partition_parts_permCongr]
 
 /-- `orderOf σ` equals the order of the honest root permutation `fRootEquiv σ`: they are conjugate
-(via `rootsEquivRoots`, `galActionHom_eq_permCongr_fRootEquiv`) and `galActionHom` is injective. This
+(via `rootsEquivRootsAux`, `galActionHom_eq_permCongr_fRootEquiv`) and `galActionHom` is injective. This
 lets a caller read `orderOf σ` off the concrete cycle structure of `fRootEquiv σ` — never touching the
 twisted `galActionHom` in downstream (instance-diamond-prone) contexts. -/
 theorem orderOf_eq_orderOf_fRootEquiv (σ : (h.comp (X ^ 2)).Gal) :
@@ -596,8 +596,8 @@ theorem orderOf_eq_orderOf_fRootEquiv (σ : (h.comp (X ^ 2)).Gal) :
   rw [← orderOf_injective (Gal.galActionHom (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField)
       (Gal.galActionHom_injective _ _) σ, galActionHom_eq_permCongr_fRootEquiv]
   exact orderOf_injective
-    (Gal.rootsEquivRoots (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).permCongrHom.toMonoidHom
-    (Gal.rootsEquivRoots (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).permCongrHom.injective _
+    (Gal.rootsEquivRootsAux (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).permCongrHom.toMonoidHom
+    (Gal.rootsEquivRootsAux (h.comp (X ^ 2)) (h.comp (X ^ 2)).SplittingField).permCongrHom.injective _
 
 open scoped Classical in
 /-- Membership in the support of the honest permutation is "`σ` moves the root". -/
@@ -712,7 +712,7 @@ theorem hRoot_transitive (hmon : h.Monic) (hirr : Irreducible h)
   have : Normal F (h.comp (X ^ 2)).SplittingField := SplittingField.instNormal _
   obtain ⟨c, hc⟩ := (Normal.minpoly_eq_iff_mem_orbit (h.comp (X ^ 2)).SplittingField).mp
     ((hmp θ).trans (hmp θ₀).symm)
-  exact ⟨c, Subtype.ext (by rwa [hRoot_val])⟩
+  exact ⟨c, Subtype.ext ((hRoot_val h c θ₀).trans hc)⟩
 
 open scoped Classical in
 /-- **(L4.6) One weight-one element generates all coordinate flips.** Given a kernel element `σ₀` with
